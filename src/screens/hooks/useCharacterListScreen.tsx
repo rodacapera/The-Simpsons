@@ -1,75 +1,79 @@
-import { useState, useEffect } from "react";
-import { Alert, View, ActivityIndicator } from "react-native";
-import { getCharacters } from "../../services/api";
-import { Character } from "../../types";
-import { useAuth } from "../../auth/AuthContext";
+import { useState, useEffect, useCallback } from 'react';
+import { Alert, View, ActivityIndicator } from 'react-native';
+import { getCharacters } from '../../services/api';
+import { Character } from '../../types';
+import { useAuth } from '../../auth/AuthContext';
 
 export const useCharacterListScreen = () => {
-    const { signOut } = useAuth();
-    const [characters, setCharacters] = useState<Character[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [search, setSearch] = useState('');
-    const [filteredCharacters, setFilteredCharacters] = useState<Character[]>([]);
+  const { signOut } = useAuth();
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filteredCharacters, setFilteredCharacters] = useState<Character[]>([]);
 
-    useEffect(() => {
-        fetchCharacters();
-    }, []); // Initial load
+  const fetchCharacters = useCallback(async () => {
+    if (loading || !hasMore) return;
 
-    useEffect(() => {
-        if (search) {
-            const lower = search.toLowerCase();
-            const filtered = characters.filter(c => 
-                c.name.toLowerCase().includes(lower)
-            );
-            setFilteredCharacters(filtered);
-        } else {
-            setFilteredCharacters(characters);
-        }
-    }, [search, characters]);
+    setLoading(true);
+    try {
+      const data = await getCharacters(page);
 
-    const fetchCharacters = async () => {
-        if (loading || !hasMore) return;
+      console.log('data', data);
 
-        setLoading(true);
-        try {  
-            const data = await getCharacters(page);
+      const newCharacters = data.results || [];
+      const isMore = page < (data.pages || 1);
 
-            console.log('data',data);
-            
-            
-            const newCharacters = data.results || [];
-            const isMore = page < (data.pages || 1);
-            
-            setCharacters(prev => [...prev, ...newCharacters]);
-            setHasMore(isMore);
-            setPage(prev => prev + 1);
-        } catch (e) {
-            Alert.alert('Error', 'Could not fetch characters');
-        } finally {
-            setLoading(false);
-        }
-    };
+      setCharacters(prev => [...prev, ...newCharacters]);
+      setHasMore(isMore);
+      setPage(prev => prev + 1);
+    } catch (e: unknown) {
+      console.error(e);
+      Alert.alert('Error', 'Could not fetch characters');
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, page]);
 
-    const renderFooter = () => {
-        if (!loading) return <View style={{ height: 20 }} />;
-        return <ActivityIndicator style={{ margin: 20 }} size="large" color="#FFD90F" />;
-    };
+  useEffect(() => {
+    fetchCharacters();
+  }, [fetchCharacters]); // Initial load
 
-    const handleLogout = async () => {
-        await signOut();
-    };
+  useEffect(() => {
+    if (search) {
+      const lower = search.toLowerCase();
+      const filtered = characters.filter(c => c.name.toLowerCase().includes(lower));
+      setFilteredCharacters(filtered);
+    } else {
+      setFilteredCharacters(characters);
+    }
+  }, [search, characters]);
 
-    return {
-        characters,
-        loading,
-        page,
-        filteredCharacters,
-        search, 
-        setSearch,    
-        fetchCharacters,
-        renderFooter,
-        handleLogout,
-    };  
+  const renderFooter = () => {
+    if (!loading) return <View style={{ height: 20 }} />;
+    return (
+      <ActivityIndicator
+        style={{ margin: 20 }}
+        size="large"
+        color="#FFD90F"
+      />
+    );
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  return {
+    characters,
+    loading,
+    page,
+    filteredCharacters,
+    search,
+    setSearch,
+    fetchCharacters,
+    renderFooter,
+    handleLogout,
+  };
 };

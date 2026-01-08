@@ -9,34 +9,38 @@ import { useCharacterDetailScreen } from './hooks/useCharacterDetailScreen';
 import { CharacterDetailScreenProps } from './types';
 
 export const CharacterDetailScreen = ({ route }: CharacterDetailScreenProps) => {
-
-  const { 
-    notes, 
-    loadingNotes, 
-    title, 
-    text, 
-    editingId, 
-    isFormVisible, 
-    extendedCharacter, 
+  const {
+    notes,
+    loadingNotes,
+    title,
+    text,
+    editingId,
+    isFormVisible,
+    extendedCharacter,
     scrollViewRef,
     navigation,
-    setTitle, 
-    setText, 
-    handleSaveNote, 
-    resetForm, 
-    handleDeleteNote, 
-    startEdit, 
-    setIsFormVisible, 
-    handleTextAreaFocus 
+    setTitle,
+    setText,
+    handleSaveNote,
+    resetForm,
+    handleDeleteNote,
+    startEdit,
+    setIsFormVisible,
+    handleTextAreaFocus,
   } = useCharacterDetailScreen(route);
 
   if (!extendedCharacter) {
     return <LoadingScreen />;
   }
-  
+
+  console.log('extendedCharacter', extendedCharacter);
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <KeyboardAwareScrollView 
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top']}
+    >
+      <KeyboardAwareScrollView
         ref={scrollViewRef}
         contentContainerStyle={{ padding: 16, paddingBottom: 70 }}
         keyboardShouldPersistTaps="handled"
@@ -45,25 +49,28 @@ export const CharacterDetailScreen = ({ route }: CharacterDetailScreenProps) => 
         showsVerticalScrollIndicator={false}
       >
         {/* Character Info */}
-        <CharacterInfo character={extendedCharacter} navigation={navigation} />
+        <CharacterInfo
+          character={extendedCharacter}
+          navigation={navigation}
+        />
 
         {/* Episodes Section with description and link to Episodes*/}
         <View style={styles.card}>
-          <Text style={styles.episodesText}>Episodes</Text> 
-          <Text style={styles.descriptionText}>Discover the episodes where this character first appeared.</Text> 
+          <Text style={styles.episodesText}>Episodes</Text>
+          <Text style={styles.descriptionText}>Discover the episodes where this character first appeared.</Text>
           <View style={styles.infoRow}>
             {/* link button to Episodes with hyperlink style */}
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigation.navigate('Episodes', { episodes: extendedCharacter.first_appearance_ep })}
               style={styles.episodesButton}
             >
               <Text style={styles.episodesButtonText}>View Episodes</Text>
-            </TouchableOpacity> 
+            </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* Notes Section */}
-        <NotesSection 
+        <NotesSection
           notes={notes}
           loadingNotes={loadingNotes}
           title={title}
@@ -79,7 +86,6 @@ export const CharacterDetailScreen = ({ route }: CharacterDetailScreenProps) => 
           startEdit={startEdit}
           handleTextAreaFocus={handleTextAreaFocus}
         />
-        
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
@@ -91,17 +97,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   } as ViewStyle,
   card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 20,
-        alignItems: 'center',
-        marginBottom: 24,
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 2,
-        position: 'relative',
-    } as ViewStyle,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+    position: 'relative',
+  } as ViewStyle,
   episodesText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -135,6 +141,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4f4d4dff',
   } as TextStyle,
-  });
-
-
+});

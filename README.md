@@ -9,6 +9,7 @@ Esta es una prueba técnica para demostrar el consumo de una API pública, manej
 - Ver un listado de personajes de The Simpsons.
 - Buscar personajes por nombre.
 - Ver detalles y frases de cada personaje.
+- Ver episodios de cada personaje.
 - Crear, editar y borrar notas personales sobre cada personaje (privadas por usuario).
 
 ## Cómo ejecutar la app
@@ -35,15 +36,17 @@ Esta es una prueba técnica para demostrar el consumo de una API pública, manej
 
 ## Decisiones Técnicas
 
-- **Gestión de Estado**: Usé `Context API` para la autenticación porque es simple y suficiente para manejar la sesión global. No hacía falta Redux para esto.
+- **Gestión de Estado**: Usé `Context API` y `AsyncStorage` para la autenticación porque es simple y suficiente para manejar la sesión global. No hacía falta Redux para esto.
 - **Persistencia**: `AsyncStorage` se encarga de guardar los usuarios (para simular el login) y las notas. Es la solución estándar para persistencia ligera.
 - **Navegación**: `React Navigation` con un Stack básico. La navegación cambia dinámicamente según si hay usuario logueado o no (Auth flow).
-- **API y Fallback**: La API de `thesimpsonsapi.com` devuelve data correcta, pero las imágenes (`portrait_path`) estaban dando 404. Decidí implementar un fallback usando `ui-avatars.com` con los colores de los Simpsons para que la app no se vea rota.
+- **API**: La API de `thesimpsonsapi.com` devuelve data correcta, e implemente el consumo de una api adicional "https://cdn.thesimpsonsapi.com/", para mostrar las imágenes de los personajes.
 - **Estilos**: StyleSheet plano. No usé librerías de componentes pesadas para mantenerlo ligero y fácil de leer.
+- **Notas**: Implemente un sistema de notas para cada personaje, que se guardan en el dispositivo local con `AsyncStorage`.
+- **Episodios**: Implemente un sistema de episodios para cada personaje, que se visualiza en una lista.
+- **Tipos**: Implemente tipos para los datos de la API y los estados de la app.
 
 ## Limitaciones
 
-- **Imágenes**: Como mencioné, las imágenes originales no cargan, así que se ven avatares generados.
 - **Seguridad**: Las contraseñas se guardan en texto plano en AsyncStorage. En una app real, esto NO se hace (usaríamos Keychain/Keystore y un backend real).
 - **Listas Largas**: La lista tiene paginación simple ("Load More"). Si la API fuera muy lenta o la lista gigante, habría que optimizar el renderizado (FlashList).
 
@@ -51,9 +54,8 @@ Esta es una prueba técnica para demostrar el consumo de una API pública, manej
 
 Con más tiempo, agregaría:
 - Tests unitarios con Jest/Testing Library.
-- TypeScript estricto (ahora es JS/TS básico).
 - Un backend real con Node.js.
 - Animaciones con Reanimated para dar más "vida" a la UI.
 
 ---
-*Hecho por [Tu Nombre]*
+*Hecho por Rhonald Capera*
